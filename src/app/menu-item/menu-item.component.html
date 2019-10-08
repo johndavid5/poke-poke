@@ -1,0 +1,1 @@
+<p [ngStyle]="{'color': (menuItemInfo.type=='CATEGORY'?'green':'gray'), 'padding-left': menuItemInfo.depth + 'em'}">{{menuItemInfo.type}},{{menuItemInfo.depth}},&quot;{{menuItemInfo.name}}&quot;,#{{menuItemInfo.sku}},${{menuItemInfo.cost}}{{(menuItemInfo.type=='CATEGORY'?'+':'')}}</p>

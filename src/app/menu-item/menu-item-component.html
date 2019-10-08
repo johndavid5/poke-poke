@@ -1,2 +1,0 @@
-<p *ngIf="menuItemInfo && menuItemInfo.type=='CATEGORY'" [ngStyle]="{'color': (menuItemInfo.type=='CATEGORY'?'green':'gray'), 'padding-left': menuItemInfo.depth + 'em'}">{{menuItemInfo.type}},{{menuItemInfo.depth}},&quot;{{menuItemInfo.name}}&quot;,#{{menuItemInfo.sku}},${{menuItemInfo.cost}}</p>
-<p *ngIf="menuItemInfo && menuItemInfo.type=='PRODUCT'" [ngStyle]="{'color': 'gray', 'padding-left': menuItemInfo.depth + 'em'}">{{menuItemInfo.type}},{{menuItemInfo.depth}},&quot;{{menuItemInfo.name}}&quot;,#{{menuItemInfo.sku}},${{menuItemInfo.cost}}</p>
