@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
 
         let result: MenuItemInfo[] = [];
 
-        function recurse(cur: Category,depth: number, path: string){
+        function recurse(cur /* Category */, depth: number, path: string){
             let sWho = "recurse";
 
             path += "/" + cur.name;

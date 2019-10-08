@@ -4,5 +4,6 @@ export class MenuItemInfo {
     name: string;
     sku: string;
     cost: number;
-    /* visible: boolean; */
+    path: string;
+    expanded: boolean;
 }
