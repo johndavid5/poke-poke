@@ -1,0 +1,105 @@
+{
+ "name": "All",
+ "children": [
+  {
+   "name": "Base",
+   "children": [
+    {
+     "name": "Rice (per serving)",
+     "sku": "0011",
+     "cost": 0.1
+    },
+    {
+     "name": "Brown Rice (per serving)",
+     "sku": "0012",
+     "cost": 0.1
+    }
+   ]
+  },
+  {
+   "name": "Topping",
+   "children": [
+    {
+     "name": "Fish",
+     "children": [
+      {
+       "name": "Salmon",
+       "sku": "0021",
+       "cost": 2
+      },
+      {
+       "name": "Tuna",
+       "sku": "0022",
+       "cost": 2
+      },
+      {
+       "name": "Spicy Tuna",
+       "sku": "0023",
+       "cost": 2
+      }
+     ]
+    },
+    {
+     "name": "Other",
+     "children": [
+      {
+       "name": "Seaweed",
+       "sku": "0031",
+       "cost": 0.5
+      }
+     ]
+    },
+    {
+     "name": "other",
+     "children": [
+      {
+       "name": "Crispy Wonton",
+       "sku": "0032",
+       "cost": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Drinks",
+   "children": [
+    {
+     "name": "Tea",
+     "children": [
+      {
+       "name": "Green Tea",
+       "sku": "0091",
+       "cost": 0.2
+      },
+      {
+       "name": "Hojicha",
+       "sku": "00092",
+       "cost": 0.2
+      }
+     ]
+    },
+    {
+     "name": "Alcohol",
+     "children": [
+      {
+       "name": "Sake",
+       "sku": "0093",
+       "cost": 2.5
+      }
+     ]
+    },
+    {
+     "name": "Soda",
+     "children": [
+      {
+       "name": "Sprite",
+       "sku": "0094",
+       "cost": 0.5
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

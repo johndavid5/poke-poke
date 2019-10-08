@@ -12,8 +12,29 @@
     </li>
 </ul>
 <ng-container *ngIf="menu">
-    <h2>
-        Here is our menu:
-    </h2>
-    <pre>{{ menuString }}</pre>
+    <div class="flex-container">
+        <div>
+	    <h2>
+	        Here is our menu:
+	    </h2>
+	    <ul class="menu-items">
+	      <li *ngFor="let menuItem of menuItems">
+	        <app-menu-item [menuItemInfo]="menuItem"></app-menu-item>
+	      </li>
+	    </ul>
+	    <pre *ngIf="1==0">{{ menuString }}</pre>
+        </div>
+
+        <div>
+	    <h2>
+	        Here is your cart:
+	    </h2>
+	    <ul class="menu-items">
+	      <li *ngFor="let menuItem of menuItems">
+	        <app-menu-item [menuItemInfo]="menuItem"></app-menu-item>
+	      </li>
+	    </ul>
+	    <pre *ngIf="1==0">{{ menuString }}</pre>
+        </div>
+    </div>
 </ng-container>
