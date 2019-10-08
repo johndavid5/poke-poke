@@ -3,12 +3,21 @@
     font-size: 18px;
 }
 
+.outer-div {
+    padding: 5em;
+}
+
+.inner-div {
+    padding-left: 5em;
+    padding-right: 5em;
+}
+
 h1 {
     text-align: center;
 }
 
 .StoreName {
-    color: lightseagreen;
+    color: rgb(92,164,153);
 }
 
 ul.menu-items {
@@ -19,7 +28,7 @@ ul.menu-items {
 }
 
 ul.menu-items li {
-  border: 1px solid purple;
+  border: 1px solid rgb(206,206,206);
   padding-left: 0.25em;
   height: 2.0em;
   line-height: 0.25em;
@@ -35,7 +44,7 @@ ul.menu-items li {
 }
 
 .flex-container>div {
-    /* width: 50%; */
-    border: 1px dotted green;
+    width: 50%;
+    /* border: 1px dotted green; */
 }
 

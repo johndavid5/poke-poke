@@ -47,23 +47,27 @@ export class AppComponent implements OnInit {
     }/* ngOnInit() */
 
     /* See https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects */
-    flattenMenu(menu: Category): MenuItemInfo[] {
+    flattenMenu(menu: Category, startDepth: number = 2 ): MenuItemInfo[] {
 
         let result: MenuItemInfo[] = [];
 
-        function recurse(cur,depth){
+        function recurse(cur: Category,depth: number, path: string){
             let sWho = "recurse";
 
-            if( cur.name && cur.sku && cur.cost ){
-                result.push( { type: 'PRODUCT', depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost } );
-            }
-            else{
-                result.push( { type: 'CATEGORY', depth: depth, name: cur.name, sku: "", cost: -1 } );
+            path += "/" + cur.name;
+
+            if( depth == startDepth ){
+              if( cur.name && cur.sku && cur.cost ){
+                result.push( { type: 'PRODUCT', depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
+              }
+              else{
+                result.push( { type: 'CATEGORY', depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: false } );
+              }
             }
 
             if( cur.children ){
                 cur.children.forEach( (child)=>{
-                  recurse( child, depth+1 )
+                  recurse( child, depth+1, path )
                 });
             }
             //else{
@@ -74,7 +78,7 @@ export class AppComponent implements OnInit {
 
         }
 
-        recurse(menu,1);
+        recurse(menu,1,"menu");
         return result;
     }
 
