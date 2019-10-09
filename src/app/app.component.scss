@@ -20,14 +20,14 @@ h1 {
     color: rgb(92,164,153);
 }
 
-ul.menu-items {
+ul.menu-items, ul.cart-items {
   list-style-type: none;
   /* display: table; */
   margin: 0;
   padding: 0;
 }
 
-ul.menu-items li {
+ul.menu-items li, ul.cart-items li {
   border: 1px solid rgb(206,206,206);
   padding-left: 0.25em;
   height: 2.0em;

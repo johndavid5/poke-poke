@@ -9,7 +9,7 @@
 	        Here is our menu:
 	    </h2>
 	    <ul class="menu-items">
-	      <li *ngFor="let menuItem of menuItems">
+	      <li *ngFor="let menuItem of menuItems" (click)="onMenuItemClick(menuItem)">
 	        <app-menu-item [menuItemInfo]="menuItem"></app-menu-item>
 	      </li>
 	    </ul>
@@ -20,9 +20,9 @@
 	    <h2>
 	        Here is your cart:
 	    </h2>
-	    <ul class="menu-items">
-	      <li *ngFor="let menuItem of menuItems">
-	        <app-menu-item [menuItemInfo]="menuItem"></app-menu-item>
+	    <ul class="cart-items">
+	      <li *ngFor="let cartItem of cartItems">
+	        <app-cart-item [cartItemInfo]="cartItem"></app-cart-item>
 	      </li>
 	    </ul>
 	    <pre *ngIf="1==0">{{ menuString }}</pre>
