@@ -68,13 +68,22 @@ export class AppComponent implements OnInit {
 
         let sWho = "AppComponent::onMenuItemClick";
 
-        console.log(`${sWho}(): menuItem = `, menuItem );
+        console.log(`${sWho}(): BEGIN: menuItem = `, menuItem );
 
-        if( menuItem.type == MenuItemType.CATEGORY && menuItem.expanded == false )
+        if( menuItem.type == MenuItemType.CATEGORY )
         {
-            this.expanders.set( menuItem.path, menuItem )
+            if( menuItem.expanded == false ){
+                // Expand this category...
+                this.expanders.set( menuItem.path, menuItem );
+            }
+            else if( menuItem.expanded == true ){
+                // Collapse this category...
+                this.expanders.delete( menuItem.path );
+            }
+
             this.menuItems = this.flattenMenu( this.menu, AppComponent.START_DEPTH(), this.expanders )
-            console.log(`${sWho}(): this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
+
+            console.log(`${sWho}(): END: this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
         }
 
     }
@@ -94,15 +103,18 @@ export class AppComponent implements OnInit {
             path += "/" + cur.name;
 
             let pathBackOne = AppComponent.pathBackOne( path ) 
+            let pathBackTwo = AppComponent.pathBackOne( pathBackOne ) 
 
-            console.log(`${sWho}(): depth = ${depth}, path = ${path}, pathBackOne = ${pathBackOne}...`);
+            console.log(`${sWho}(): depth = ${depth}, path = ${path}, pathBackOne = ${pathBackOne}, pathBackTwo = ${pathBackTwo}...`);
             console.log(`${sWho}(): cur.name = ${cur.name}, cur.sku = ${cur.sku}, cur.cost = ${cur.cost}, cur.children = `, cur.children );
 
             if( depth == startDepth ){
               if( cur.name && cur.sku && cur.cost ){
+                // Looks like a PRODUCT, Moe...
                 result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
               }
               else{
+                // Looks like a CATEGORY, Moe...
                 let bExpanded:boolean = false;
                 if( expanders.has( path ) ){
                     bExpanded = true;
@@ -112,15 +124,20 @@ export class AppComponent implements OnInit {
             }/* if( depth == startDepth ) */
             else if( depth > startDepth ){
               if( expanders.has( pathBackOne ) ){ 
-                if( cur.name && cur.sku && cur.cost ){ 
-                  // Implying this is a PRODUCT which is a first generation child of one of the
-                  //`expanders` collection (which are CATEGORY's), and thus should be displayed...
-                  result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
-                }
-                else {
-                    result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: false } );
-                }
-              }
+                  if( cur.name && cur.sku && cur.cost ){ 
+                    // Implying this is a PRODUCT which is a first generation child of one of the
+                    //`expanders` collection (which are CATEGORY's), and thus should be displayed...
+                    result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
+                  }
+                  else {
+                    // Looks like a CATEGORY, Moe...
+                    let bExpanded:boolean = false;
+                    if( expanders.has( path ) ){
+                      bExpanded = true;
+                    }
+                    result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded } );
+                  }
+                }/* if( expanders.has( pathBackOne ) ) */
             }
 
             if( cur.children ){
