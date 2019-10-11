@@ -123,7 +123,8 @@ export class AppComponent implements OnInit {
               }
             }/* if( depth == startDepth ) */
             else if( depth > startDepth ){
-              if( expanders.has( pathBackOne ) ){ 
+                //if( expanders.has( pathBackOne ) ){ 
+                if( AppComponent.allParentsAreExpanders( expanders, path, depth, startDepth ) ){
                   if( cur.name && cur.sku && cur.cost ){ 
                     // Implying this is a PRODUCT which is a first generation child of one of the
                     //`expanders` collection (which are CATEGORY's), and thus should be displayed...
@@ -173,4 +174,41 @@ export class AppComponent implements OnInit {
             return pathIn;
         }
     }/* pathBackOne() */
+
+
+    /* Returns true if all parent paths back to `startDepth` are in the `expanders` Map... */
+    static allParentsAreExpanders( expanders: Map<string,MenuItemInfo>, path: string, depth: number, startDepth: number ): boolean {
+        let sWho = "AppComponent::allParentsAreExpanders";
+
+        console.log( '\t' + `${sWho}(): path = ${path}, depth = ${depth}, startDepth = ${depth}, expanders = `, expanders );
+
+        let pathBackOne = path;
+        let iDepth = depth;
+
+        while( true ){
+
+          iDepth--;
+
+          if( iDepth < startDepth ){
+            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth} is less dhen dha startDepth, so exitin' dha loop, Moe...` );
+            break;
+          }
+
+          pathBackOne = AppComponent.pathBackOne( pathBackOne );
+
+          console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}, pathBackOne = ${pathBackOne}...`);
+         
+
+          if( ! expanders.has( pathBackOne ) ){
+            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Sorry, Moe, pathBackOne = ${pathBackOne} ain't in dha expanders Map, so retoynin' false...Sorry, gotta do it...!` );
+            return false;
+          }
+          else {
+            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Hey, Moe, pathBackOne = ${pathBackOne} is in dha expanders Map, so we can keep goin' widh dha loop, Moe...!` );
+          }
+        }
+
+        console.log( '\t' + `${sWho}(): SHEMP: Good news, Moe, all dha pathBackOnes were expanders...retoynin' true...` );
+        return true;
+    }
 }

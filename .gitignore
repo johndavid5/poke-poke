@@ -3,6 +3,7 @@
 v.bat
 doit.bat
 status.*
+pspbrwse.jbf
 
 # compiled output
 /dist
