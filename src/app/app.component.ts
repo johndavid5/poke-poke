@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ApiService, Category, Product } from './api.service';
+import { ApiService, Category, Product, Order } from './api.service';
 
 import { MenuItemInfo, MenuItemType } from './MenuItemInfo';
 import { CartItemInfo } from './CartItemInfo';
@@ -14,16 +14,21 @@ export class AppComponent implements OnInit {
 
     public menu: Category;
 
+    /* Flattened version of the menu tree...with expanded items shown... */
     public menuItems: Array<MenuItemInfo>;
 
+    /* Use to sort items in cart so they are ordered the same as the menu... */
+    public allMenuItems: Array<MenuItemInfo>;
+
+    /* Items that are currently expanded... */
     public expanders: Map<string,MenuItemInfo>;
 
-    public cartItems: Array<CartItemInfo>;
+    /* The order...! */
+    public order: Order;
 
     public static START_DEPTH(): number {
         return 2;
     }
-
 
     constructor(private apiService: ApiService) {
         this.expanders = new Map<string,MenuItemInfo>();
@@ -40,60 +45,113 @@ export class AppComponent implements OnInit {
 
         console.log(`${sWho}(): Got from ApiService: this.menu = inventory = `, this.menu );
 
-        // Make it easy on yourself:
-        //   Flatten the menu tree into an array...
-        //this.menuItems = [
-        //  {id: 1, description: "A", visible: true}
-        //  ,{id: 2, description: "B", visible: false}
-        //  ,{id: 3, description: "C", visible: true}
-        //];
+        this.allMenuItems = this.flattenMenu( this.menu, AppComponent.START_DEPTH(), null )
 
-        //console.log(`${sWho}(): this.menuItems = `, this.menuItems );
+        //console.log(`${sWho}(): this.allMenuItems = this.flattenMenu( this.menu, ... , null ) = `, this.allMenuItems );
 
         this.menuItems = this.flattenMenu( this.menu, AppComponent.START_DEPTH(), this.expanders )
 
-        console.log(`${sWho}(): this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
+        //console.log(`${sWho}(): this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
 
-        this.cartItems = [
-         { name: 'Sea Weed', sku: '1234567', cost: 0.10, path: './a/b/c' }
-         ,{ name: 'Ramen', sku: '1234765', cost: 0.30, path: './a/b' }
-         ,{ name: 'MSG', sku: '1234555', cost: 0.20, path: './a/b/d' }
-        ];
+        this.order = new Order();
 
-      });
+        this.order.customer = '';
+
+        this.order.products = [];
+
+        this.order.total = 0;
+
+       }); /* subscribe */
 
     }/* ngOnInit() */
 
+    onPlaceOrderClick(): void {
+
+        let sWho = "AppComponent::onPlaceOrderClick";
+
+        this.order.customer = this.order.customer.trim();
+
+        if( this.order.customer.length == 0 ){
+            alert("Please fill in your name!");
+            return;
+        }
+
+        if( this.order.total == 0 ){
+            alert("Please choose some items!");
+            return;
+        }
+
+        console.log(`${sWho}(): Calling this.apiService.placeOrder( this.order = `, this.order, ` )...`);
+
+        this.apiService.placeOrder(this.order)
+        .subscribe(
+           response => {
+  
+             let sWho = "AppComponent::onPlaceOrderClick().this.apiService.placeOrder().subscribe()"
+  
+             console.log(`${sWho}(): Got response from ApiService:`, response );
+
+             alert("Order Placed!  Thank you for your business, " + this.order.customer + "!");
+  
+        }); /* subscribe */
+
+    }/* onPlaceOrderClick() */
+
+    /* Expands or collapses the CATEGORY, or adds the PRODUCT to the order... */
     onMenuItemClick(menuItem: MenuItemInfo): void {
 
         let sWho = "AppComponent::onMenuItemClick";
 
-        console.log(`${sWho}(): BEGIN: menuItem = `, menuItem );
+        //console.log(`${sWho}(): BEGIN: menuItem = `, menuItem );
 
         if( menuItem.type == MenuItemType.CATEGORY )
         {
             if( menuItem.expanded == false ){
-                // Expand this category...
+                // Expand this CATEGORY...
                 this.expanders.set( menuItem.path, menuItem );
             }
             else if( menuItem.expanded == true ){
-                // Collapse this category...
+                // Collapse this CATEGORY...
                 this.expanders.delete( menuItem.path );
             }
 
             this.menuItems = this.flattenMenu( this.menu, AppComponent.START_DEPTH(), this.expanders )
 
-            console.log(`${sWho}(): END: this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
-        }
+            //console.log(`${sWho}(): END: this.menuItems = this.flattenMenu( this.menu ) = `, this.menuItems );
+        }/* if( menuItem.type == MenuItemType.CATEGORY ) */
+        else if( menuItem.type == MenuItemType.PRODUCT)
+        {
+           // Add this PRODUCT to the order...
+           this.order.products.push( { name: menuItem.name, sku: menuItem.sku, cost: menuItem.cost } );
 
-    }
+           // Sort products according to order they are found in the menu...
+           this.order.products.sort( (productA, productB)=>{
+               let comp = this.allMenuItems.findIndex(menuItem => menuItem.type == MenuItemType.PRODUCT && menuItem.name == productA.name )
+                  - 
+                this.allMenuItems.findIndex(menuItem => menuItem.type == MenuItemType.PRODUCT && menuItem.name == productB.name );
+               return comp;
+           });
 
-    /* See https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects */
+           this.order.total = this.order.products.reduce( (sum,product)=>{
+                return sum + product.cost;
+           }, 0 );
+        }/* if( menuItem.type == MenuItemType.PRODUCT) */
+
+        //console.log(`${sWho}(): Let off some steam, Bennett!`);
+
+    }/* onMenuItemClick(menuItem: MenuItemInfo): void */
+
+    /*
+    * Flattens the menu tree into an array, displaying only 
+    * items whose paths are descendants of the items in
+    * the `expanders` map...or supply null for `expanders` 
+    * to display all items beginning at `startDepth`.
+    */
     flattenMenu(menu: Category, startDepth: number, expanders: Map<string,MenuItemInfo> ): MenuItemInfo[] {
 
         let sWho = "AppComponent::flattenMenu";
 
-        console.log(`${sWho}(): startDepth = ${startDepth}, expanders = `, expanders );
+        //console.log(`${sWho}(): startDepth = ${startDepth}, expanders = `, expanders );
 
         let result: MenuItemInfo[] = [];
 
@@ -105,8 +163,8 @@ export class AppComponent implements OnInit {
             let pathBackOne = AppComponent.pathBackOne( path ) 
             let pathBackTwo = AppComponent.pathBackOne( pathBackOne ) 
 
-            console.log(`${sWho}(): depth = ${depth}, path = ${path}, pathBackOne = ${pathBackOne}, pathBackTwo = ${pathBackTwo}...`);
-            console.log(`${sWho}(): cur.name = ${cur.name}, cur.sku = ${cur.sku}, cur.cost = ${cur.cost}, cur.children = `, cur.children );
+            //console.log(`${sWho}(): depth = ${depth}, path = ${path}, pathBackOne = ${pathBackOne}, pathBackTwo = ${pathBackTwo}...`);
+            //console.log(`${sWho}(): cur.name = ${cur.name}, cur.sku = ${cur.sku}, cur.cost = ${cur.cost}, cur.children = `, cur.children );
 
             if( depth == startDepth ){
               if( cur.name && cur.sku && cur.cost ){
@@ -116,29 +174,27 @@ export class AppComponent implements OnInit {
               else{
                 // Looks like a CATEGORY, Moe...
                 let bExpanded:boolean = false;
-                if( expanders.has( path ) ){
+                if( expanders == null || expanders.has( path ) ){
                     bExpanded = true;
                 }
                 result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded } );
               }
             }/* if( depth == startDepth ) */
             else if( depth > startDepth ){
-                //if( expanders.has( pathBackOne ) ){ 
-                if( AppComponent.allParentsAreExpanders( expanders, path, depth, startDepth ) ){
+                if( expanders == null || AppComponent.allParentsAreExpanders( expanders, path, depth, startDepth ) ){
                   if( cur.name && cur.sku && cur.cost ){ 
-                    // Implying this is a PRODUCT which is a first generation child of one of the
-                    //`expanders` collection (which are CATEGORY's), and thus should be displayed...
+
                     result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
                   }
                   else {
-                    // Looks like a CATEGORY, Moe...
+                  
                     let bExpanded:boolean = false;
-                    if( expanders.has( path ) ){
+                    if( expanders == null || expanders.has( path ) ){
                       bExpanded = true;
                     }
                     result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded } );
                   }
-                }/* if( expanders.has( pathBackOne ) ) */
+                }
             }
 
             if( cur.children ){
@@ -146,21 +202,14 @@ export class AppComponent implements OnInit {
                   recurse( child, depth+1, path )
                 });
             }
-            //else{
-                //console.log(`${sWho}(): cur.name = ${cur.name}, cur.sku = ${cur.sku}, cur.cost = ${cur.cost}, cur.children = `, cur.children );
-                // Base Case: a Product...
-                //result.push( { type: 'PRODUCT', depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost } );
-            //} 
 
         }
 
         recurse(menu,1,"menu");
         return result;
-    }
 
-    get menuString(): string {
-        return JSON.stringify(this.menu, null, ' ');
-    }
+    }/* flattenMenu() */
+
 
     /** 
     * e.g., pathBackOne('menu/ALL/Base') = 'menu/ALL'
@@ -178,9 +227,10 @@ export class AppComponent implements OnInit {
 
     /* Returns true if all parent paths back to `startDepth` are in the `expanders` Map... */
     static allParentsAreExpanders( expanders: Map<string,MenuItemInfo>, path: string, depth: number, startDepth: number ): boolean {
+
         let sWho = "AppComponent::allParentsAreExpanders";
 
-        console.log( '\t' + `${sWho}(): path = ${path}, depth = ${depth}, startDepth = ${depth}, expanders = `, expanders );
+        //console.log( '\t' + `${sWho}(): path = ${path}, depth = ${depth}, startDepth = ${depth}, expanders = `, expanders );
 
         let pathBackOne = path;
         let iDepth = depth;
@@ -190,25 +240,35 @@ export class AppComponent implements OnInit {
           iDepth--;
 
           if( iDepth < startDepth ){
-            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth} is less dhen dha startDepth, so exitin' dha loop, Moe...` );
+            //console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth} is less dhen dha startDepth, so exitin' dha loop, Moe...` );
             break;
           }
 
           pathBackOne = AppComponent.pathBackOne( pathBackOne );
 
-          console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}, pathBackOne = ${pathBackOne}...`);
+          //console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}, pathBackOne = ${pathBackOne}...`);
          
 
           if( ! expanders.has( pathBackOne ) ){
-            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Sorry, Moe, pathBackOne = ${pathBackOne} ain't in dha expanders Map, so retoynin' false...Sorry, gotta do it...!` );
+            //console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Sorry, Moe, pathBackOne = ${pathBackOne} ain't in dha expanders Map, so retoynin' false...Sorry, gotta do it...!` );
             return false;
           }
           else {
-            console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Hey, Moe, pathBackOne = ${pathBackOne} is in dha expanders Map, so we can keep goin' widh dha loop, Moe...!` );
+            //console.log( '\t' + '\t' + `${sWho}(): SHEMP: Moe, iDepth = ${iDepth}: SHEMP: Hey, Moe, pathBackOne = ${pathBackOne} is in dha expanders Map, so we can keep goin' widh dha loop, Moe...!` );
           }
         }
 
-        console.log( '\t' + `${sWho}(): SHEMP: Good news, Moe, all dha pathBackOnes were expanders...retoynin' true...` );
+        //console.log( '\t' + `${sWho}(): SHEMP: Good news, Moe, all dha pathBackOnes were expanders...retoynin' true...` );
         return true;
+
+    }/* allParentsAreExpanders() */
+
+
+    get menuString(): string {
+        return JSON.stringify(this.menu, null, ' ');
+    }
+
+    get orderString(): string {
+        return JSON.stringify(this.order, null, ' ');
     }
 }
