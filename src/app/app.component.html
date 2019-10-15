@@ -1,33 +1,32 @@
 <h2>
-    Welcome to <span class="StoreName">Poke-Poke</span>!
+    Welcome to <span class="poke">Poke-Poke</span>!
 </h2>
+
 <div class="outer-div">
 <ng-container *ngIf="menu">
-    <div class="flex-container">
-        <div class="inner-div">
-		    <ul class="menu-items">
-                <li [ngStyle]="{ 'color': (menuItem.type=='CATEGORY'?'rgb(92,164,153)':'black'), 'padding-left': (menuItem.depth-1) + 'em' }"
+        <div class="inner-div menu-div">
+		    <table class="menu-items">
+                <tr class="menu-item" [class.poke]="menuItem.type=='CATEGORY'" 
                   *ngFor="let menuItem of menuItems"
                   (click)="onMenuItemClick(menuItem)">
-		        <app-menu-item [menuItemInfo]="menuItem"></app-menu-item>
-		      </li>
-		    </ul>
+                     <td [ngStyle]="{ 'padding-left': (menuItem.depth-1) + 'em' }" >{{menuItem.name}}</td><td class="right-item">{{menuItem.type=='CATEGORY'?(menuItem.expanded==true?'&ndash;':'+'):('&nbsp;')}}</td>
+		        </tr>
+		    </table>
 		    <pre *ngIf="1==0">{{ menuString }}</pre>
         </div>
 
-        <div class="inner-div">
-		    <ul class="cart-items">
-              <li class="order-form" style="display: flex; flex-wrap: wrap; border: 0px; padding: 0px;"><input type="text" class="poke-text" placeholder="Customer Name" [(ngModel)]="order.customer" name="customer-name" [ngStyle]="{flexGrow: 1}"><input type="button" class="poke-submit" value="Place Order" (click)="onPlaceOrderClick()">
-	          </li>
-              <li class="cart-item" style="display: flex; flex-wrap: nowrap; padding-left: 0.5em;" *ngFor="let cartItem of order.products" style="white-space: wrap;">
-		        <app-cart-item [cartItemInfo]="cartItem"></app-cart-item>
-		      </li>
-              <li class="cart-total" style="display: flex; flex-wrap: nowrap; border: 0;">
-                <span style="flex-grow: 8;">Total</span><span style="float: right; padding-right: 1em; text-align: right;">{{'$' + (order.total|number:'1.2-2') }}</span>
-		      </li>
-		    </ul>
+        <div class="inner-div cart-div">
+		    <table class="cart-items">
+              <tr class="order-form" ><td><input type="text" class="poke-text" placeholder="Customer Name" [(ngModel)]="order.customer" name="customer-name"></td><td><input type="button" class="poke-submit" value="Place Order" (click)="onPlaceOrderClick()"></td>
+	          </tr>
+              <tr class="cart-item" *ngFor="let cartItem of order.products">
+                <td class="left-cart">{{cartItem.name}}</td><td class="right-item">{{'$' + (cartItem.cost|number:'1.2-2') }}</td>
+		      </tr>
+              <tr class="cart-total" style="border: 0;">
+                <td class="left-cart">Total</td><td class="right-item">{{'$' + (order.total|number:'1.2-2') }}</td>
+		      </tr>
+		    </table>
 		    <pre *ngIf="1==0">{{ orderString }}</pre>
         </div>
-    </div>
 </ng-container>
 </div>

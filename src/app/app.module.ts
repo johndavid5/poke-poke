@@ -4,14 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { MenuItemComponent } from './menu-item/menu-item.component';
-import { CartItemComponent } from './cart-item/cart-item.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        MenuItemComponent,
-        CartItemComponent
     ],
     imports: [
         BrowserModule,

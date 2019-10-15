@@ -7,13 +7,16 @@ $color-poke-green: rgb(92,164,153);
 }
 
 .outer-div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     padding: 1em;
 }
 
 .inner-div {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+    padding: 0.5em;
 }
+
 
 h1, h2, h3 {
     text-align: center;
@@ -24,45 +27,45 @@ h1, h2, h3 {
     color: $color-poke-green;
 }
 
-ul.menu-items, ul.cart-items {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+.poke {
+    color: $color-poke-green;
 }
 
-.cart-items {
-  margin: 0;
-  padding: 0;
+table.cart-items, table.menu-items {
+    border-collapse: collapse; /* allows assigning borders to <tr> */
 }
 
-.cart-item {
-  /* border: 1px solid rgb(206,206,206); */
+.right-item {
+   text-align: right; 
+   padding-right: 1em;
 }
 
-ul.menu-items li, ul.cart-items li {
-  border: 1px solid rgb(206,206,206);
-  padding-top: 0;
-  padding-right: 1.0em;
-  padding-bottom: 0;
-  padding-left: 0.5em;
-  vertical-align: middle;
-  view: "flex";  
-  /* height: 2.0em; */
-  /* padding: 1.0em; */
-  /* line-height: 0.25em; */
-  /* display: table-cell; */
-}
-
-.flex-container {
+/*
+* Hack to allow text field and button to scrunch to vertical 
+* on smartphone, for example...
+*/
+tr.order-form {
     display: flex;
-    flex-direction: row;
-    width: 100%
-    /* flex-wrap: nowrap; */
+    flex-wrap: wrap;
+    border: 0px;
+    padding: 0.25em;
 }
 
-.flex-container>div {
-    width: 50%;
-    /* border: 1px dotted green; */
+.menu-item, .cart-item {
+  border: 1px solid rgb(206,206,206);
+}
+
+.menu-item td, .cart-item td, .cart-total td {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+.left-cart {
+  padding-left: 0.5em;
+}
+
+.cart-total {
+    padding-top: 0.25em;
 }
 
 .poke-text {
@@ -75,33 +78,7 @@ ul.menu-items li, ul.cart-items li {
 }
 
 .poke-submit:hover {
-    /* background-color: lightgreen; */
     background-color: white;
     color: $color-poke-green;
 }
 
-/*
-.input, .submit {
-    font-size: 1em;
-}
-*/
-
-/*
-.input,
-.submit {
-    display: inline-block;
-    padding: 10px 15px;
-    font-size: 20px;
-    border-radius: 0;
-    -webkit-appearance: none;
-}
-
-.input {
-    border: 1px solid lightgray;
-}
-
-.submit {
-    background-color: lightgreen;
-    border: 1px solid transparent;
-}
-*/
