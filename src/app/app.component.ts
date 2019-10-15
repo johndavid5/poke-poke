@@ -34,13 +34,15 @@ export class AppComponent implements OnInit {
         this.expanders = new Map<string,MenuItemInfo>();
     }
 
+    public bFake = true;
+
     ngOnInit() {
 
       let sWho = "AppComponent::ngOnInit()";
 
       let bFake = true;
 
-      if (bFake){
+      if (this.bFake){
          let inventory = this.apiService.getFakeInventory(); 
 
          console.log(`${sWho}(): Got from ApiService.getFakeInventory: inventory = `, inventory );
@@ -104,19 +106,30 @@ export class AppComponent implements OnInit {
             return;
         }
 
-        console.log(`${sWho}(): Calling this.apiService.placeOrder( this.order = `, this.order, ` )...`);
+        if( this.bFake ){
+            console.log(`${sWho}(): Calling this.apiService.placeFakeOrder( this.order = `, this.order, ` )...`);
 
-        this.apiService.placeOrder(this.order)
-        .subscribe(
-           response => {
-  
-             let sWho = "AppComponent::onPlaceOrderClick().this.apiService.placeOrder().subscribe()"
-  
-             console.log(`${sWho}(): Got response from ApiService:`, response );
+            let response = this.apiService.placeFakeOrder( this.order );
 
-             alert("Order Placed!  Thank you for your business, " + this.order.customer + "!");
-  
-        }); /* subscribe */
+            console.log(`${sWho}(): Got response from ApiService.placeFakeOrder(): `, response ); 
+
+            alert("Order Placed!  Thank you for your business, " + this.order.customer + "!");
+        }
+        else {
+	        console.log(`${sWho}(): Calling this.apiService.placeOrder( this.order = `, this.order, ` )...`);
+	
+	        this.apiService.placeOrder(this.order)
+	        .subscribe(
+	           response => {
+	  
+	             let sWho = "AppComponent::onPlaceOrderClick().this.apiService.placeOrder().subscribe()"
+	  
+	             console.log(`${sWho}(): Got response from ApiService:`, response );
+	
+	             alert("Order Placed!  Thank you for your business, " + this.order.customer + "!");
+	  
+	        }); /* subscribe */
+        }
 
     }/* onPlaceOrderClick() */
 

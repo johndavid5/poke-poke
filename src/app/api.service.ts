@@ -42,4 +42,8 @@ export class ApiService {
     placeOrder(o: Order): Observable<Order> {
         return this.http.post<Order>(host + '/place_order', o, { responseType: 'json' });
     }
+
+    placeFakeOrder(o: Order){
+        return { status: 'OK', order: o }
+    }
 }
