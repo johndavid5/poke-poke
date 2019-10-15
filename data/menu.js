@@ -1,4 +1,4 @@
-{
+export const menu = {
  "name": "All",
  "children": [
   {
@@ -102,4 +102,4 @@
    ]
   }
  ]
-}
+};

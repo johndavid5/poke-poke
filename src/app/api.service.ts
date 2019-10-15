@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { menu } from '../../data/menu.js' 
 
 const host = 'http://fuse-interview.appspot.com';
 
@@ -32,6 +33,10 @@ export class ApiService {
 
     getInventory(): Observable<Category> {
         return this.http.get<Category>(host + '/inventory', { responseType: 'json' });
+    }
+
+    getFakeInventory(){
+        return menu;
     }
 
     placeOrder(o: Order): Observable<Order> {

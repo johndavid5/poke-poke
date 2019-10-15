@@ -35,15 +35,41 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-      this.apiService.getInventory()
-      .subscribe(
-      inventory => {
 
-        let sWho = "AppComponent::ngOnInit().this.apiService.getInventory().subscribe()"
+      let sWho = "AppComponent::ngOnInit()";
 
-        this.menu = inventory
+      let bFake = true;
 
-        console.log(`${sWho}(): Got from ApiService: this.menu = inventory = `, this.menu );
+      if (bFake){
+         let inventory = this.apiService.getFakeInventory(); 
+
+         console.log(`${sWho}(): Got from ApiService.getFakeInventory: inventory = `, inventory );
+
+         this.menuInit( inventory );
+      }
+      else {
+
+	      this.apiService.getInventory()
+	      .subscribe(
+	      inventory => {
+	
+	        let sWho = "AppComponent::ngOnInit().this.apiService.getInventory().subscribe()"
+	
+	        console.log(`${sWho}(): Got from ApiService: inventory = `, inventory );
+	
+	        this.menuInit( inventory );
+	
+	       }); /* subscribe */
+
+       }
+
+    }/* ngOnInit() */
+
+    menuInit( leMenu ){ 
+
+        let sWho = "AppComponent::menuInit";
+
+        this.menu = leMenu;
 
         this.allMenuItems = this.flattenMenu( this.menu, AppComponent.START_DEPTH(), null )
 
@@ -60,10 +86,7 @@ export class AppComponent implements OnInit {
         this.order.products = [];
 
         this.order.total = 0;
-
-       }); /* subscribe */
-
-    }/* ngOnInit() */
+    }
 
     onPlaceOrderClick(): void {
 
@@ -136,8 +159,6 @@ export class AppComponent implements OnInit {
                 return sum + product.cost;
            }, 0 );
         }/* if( menuItem.type == MenuItemType.PRODUCT) */
-
-        //console.log(`${sWho}(): Let off some steam, Bennett!`);
 
     }/* onMenuItemClick(menuItem: MenuItemInfo): void */
 
