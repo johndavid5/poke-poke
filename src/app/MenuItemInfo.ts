@@ -13,4 +13,5 @@ export class MenuItemInfo {
     cost: number;
     path: string;
     expanded: boolean;
+    is_product_to_category: boolean;
 }

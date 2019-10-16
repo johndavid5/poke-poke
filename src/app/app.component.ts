@@ -5,6 +5,8 @@ import { ApiService, Category, Product, Order } from './api.service';
 import { MenuItemInfo, MenuItemType } from './MenuItemInfo';
 import { CartItemInfo } from './CartItemInfo';
 
+import { Config } from '../config.js';
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -31,18 +33,19 @@ export class AppComponent implements OnInit {
     }
 
     constructor(private apiService: ApiService) {
-        this.expanders = new Map<string,MenuItemInfo>();
-    }
 
-    public bFake = true;
+        let sWho = "AppComponent::constructor";
+
+        this.expanders = new Map<string,MenuItemInfo>();
+
+        console.log(`${sWho}(): Config = `, Config );
+    }
 
     ngOnInit() {
 
       let sWho = "AppComponent::ngOnInit()";
 
-      let bFake = true;
-
-      if (this.bFake){
+      if ( Config.USE_FAKE_WEB_SERVICE ){
          let inventory = this.apiService.getFakeInventory(); 
 
          console.log(`${sWho}(): Got from ApiService.getFakeInventory: inventory = `, inventory );
@@ -106,7 +109,8 @@ export class AppComponent implements OnInit {
             return;
         }
 
-        if( this.bFake ){
+        if( Config.USE_FAKE_WEB_SERVICE ){
+
             console.log(`${sWho}(): Calling this.apiService.placeFakeOrder( this.order = `, this.order, ` )...`);
 
             let response = this.apiService.placeFakeOrder( this.order );
@@ -202,23 +206,23 @@ export class AppComponent implements OnInit {
 
             if( depth == startDepth ){
               if( cur.name && cur.sku && cur.cost ){
-                // Looks like a PRODUCT, Moe...
-                result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
+
+                result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false, is_product_to_category: false } );
               }
               else{
-                // Looks like a CATEGORY, Moe...
+
                 let bExpanded:boolean = false;
                 if( expanders == null || expanders.has( path ) ){
                     bExpanded = true;
                 }
-                result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded } );
+                result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded, is_product_to_category: false } );
               }
             }/* if( depth == startDepth ) */
             else if( depth > startDepth ){
                 if( expanders == null || AppComponent.allParentsAreExpanders( expanders, path, depth, startDepth ) ){
                   if( cur.name && cur.sku && cur.cost ){ 
 
-                    result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false } );
+                    result.push( { type: MenuItemType.PRODUCT, depth: depth, name: cur.name, sku: cur.sku, cost: cur.cost, path: path, expanded: false, is_product_to_category: false } );
                   }
                   else {
                   
@@ -226,7 +230,7 @@ export class AppComponent implements OnInit {
                     if( expanders == null || expanders.has( path ) ){
                       bExpanded = true;
                     }
-                    result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded } );
+                    result.push( { type: MenuItemType.CATEGORY, depth: depth, name: cur.name, sku: "", cost: -1, path: path, expanded: bExpanded, is_product_to_category: false } );
                   }
                 }
             }
@@ -240,6 +244,15 @@ export class AppComponent implements OnInit {
         }
 
         recurse(menu,1,"menu");
+
+        // Hack for now...to figure out if this item is a PRODUCT and the next item is a CATEGORY...
+        // ...in which case we will assign CSS class .product-to-category and not have any bottom border...
+        result.forEach((item,index)=>{
+            if( index <= result.length - 2 && item.type==MenuItemType.PRODUCT && result[index+1].type==MenuItemType.CATEGORY){
+                result[index].is_product_to_category = true;
+            }
+        })
+
         return result;
 
     }/* flattenMenu() */

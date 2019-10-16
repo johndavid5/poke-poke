@@ -1,4 +1,5 @@
 $color-poke-green: rgb(92,164,153);
+$color-poke-gray: rgb(206,206,206);
 
 :host, .poke-text, .poke-submit {
     font-family: sans-serif;
@@ -6,6 +7,10 @@ $color-poke-green: rgb(92,164,153);
     font-weight: normal;
 }
 
+/*
+* Menu and Cart scrunch to vertical
+* layout on a smartphone...
+*/
 .outer-div {
     display: flex;
     justify-content: center;
@@ -17,55 +22,74 @@ $color-poke-green: rgb(92,164,153);
     padding: 0.5em;
 }
 
+div {
+    margin: 0;
+}
 
 h1, h2, h3 {
     text-align: center;
     white-space: wrap;
 }
 
-.StoreName {
-    color: $color-poke-green;
-}
-
 .poke {
     color: $color-poke-green;
 }
 
-table.cart-items, table.menu-items {
-    border-collapse: collapse; /* allows assigning borders to <tr> */
+.menu-item {
+  display: flex;
 }
 
-.right-item {
+
+.left-menu-item {
+    padding-left: 0.5em;
+}
+
+.left-menu-item, .right-menu-symbol {
+    border-bottom: 2px solid $color-poke-gray;
+}
+
+.left-menu-padder {
+    border-left: 2px solid $color-poke-gray;
+}
+
+.right-menu-symbol, .right-cart-amount {
+   flex-grow: 1;
    text-align: right; 
    padding-right: 1em;
+   padding-left: 1em;
+}
+
+.right-menu-symbol {
+    border-right: 2px solid $color-poke-gray;
+}
+
+.menu-items > :first-child > * {
+    border-top: 2px solid $color-poke-gray;
+}
+
+.menu-items > :last-child .left-menu-padder {
+    border-bottom: 2px solid $color-poke-gray;
+}
+
+/* No bottom border if this item is a PRODUCT but next item is a CATEGORY... */
+.product-to-category > * {
+    border-bottom: 0px;
 }
 
 /*
-* Hack to allow text field and button to scrunch to vertical 
-* on smartphone, for example...
+* Text field and button in order
+* form scrunch to vertical 
+* layout on smartphone...
 */
-tr.order-form {
+.order-form {
     display: flex;
     flex-wrap: wrap;
     border: 0px;
     padding: 0.25em 0.00em;
 }
 
-.menu-item, .cart-item {
-  border: 1px solid rgb(206,206,206);
-}
-
-.menu-item td, .cart-item td, .cart-total td {
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
-}
-
-.left-cart {
-  padding-left: 0.5em;
-}
-
-.cart-total {
-    padding-top: 0.25em;
+.poke-submit, .menu-item {
+    cursor: pointer;
 }
 
 .poke-text {
@@ -81,4 +105,41 @@ tr.order-form {
     background-color: white;
     color: $color-poke-green;
 }
+
+.cart-item, .cart-total {
+  display: flex;
+}
+
+.cart-items > :nth-child(2) {
+    border-top: 2px solid $color-poke-gray;
+}
+
+.cart-item {
+  border-top: 2px solid $color-poke-gray;
+  border-right: 2px solid $color-poke-gray;
+  border-left: 2px solid $color-poke-gray;
+}
+
+.cart-items > :last-child {
+  border-bottom: 2px solid $color-poke-gray;
+}
+
+.left-cart, .right-cart-amount {
+  padding-top: 0.10em;
+  padding-bottom: 0.10em;
+}
+
+.left-menu-padder, .left-menu-item, .right-menu-symbol {
+  padding-top: 0.10em;
+  padding-bottom: 0.10em;
+}
+
+.left-cart {
+  padding-left: 0.5em;
+}
+
+.cart-total {
+    padding-top: 0.25em;
+}
+
 
